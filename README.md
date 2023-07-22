@@ -1,3 +1,3 @@
-# Algorithms in JS and f#
+# Algorithms in JS and F#
 
 * [Sorting](./Sorting/Index.ipynb)
