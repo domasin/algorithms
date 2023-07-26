@@ -29,8 +29,6 @@ let sseq xs =
     (min,max,sum))
 |> List.maxBy (fun (_,_,sum) -> sum)
 
--infinity + 1.
-
 let maxRightSeq xs =
     // printfn "curVal | prvInd | prvSum | maxInd | maxSum "
 
@@ -52,10 +50,10 @@ let maxRightSeq xs =
     |> fun (_, _, maxInd, maxSum)  -> (maxInd, maxSum) 
 
 
-[0.;1.;2.;-3.;-4.] |> maxRightSeq
+// [0.;1.;2.;-3.;-4.] |> maxRightSeq
 
-[0.;-25.;20.;6.;-16.]
-|> maxRightSeq
+// [0.;-25.;20.;6.;-16.]
+// |> maxRightSeq
 
 let maxCrossingSubSeq low mid high (xs:float list) = 
     let lxs =  xs[low..mid]
@@ -76,22 +74,33 @@ let maxCrossingSubSeq low mid high (xs:float list) =
 
     maxLeft,maxRight,rightSum+leftsum 
 
+// [0.;-25.;20.;3.;-16.;0.;1.;2.;-3.;4.]
+// |> maxCrossingSubSeq 1 5 9
 
+let rec maxSubSeq low high (xs: float list) =
+    // printfn "%A %A %A" low high xs
 
-[0.;-25.;20.;3.;-16.;0.;1.;2.;-3.;4.]
-|> maxCrossingSubSeq 1 5 9
+    match low = high with
+    | true -> (low, high, xs[low])
+    | false ->
+        let lowF = low |> float
+        let highF = high |> float
+        let mid = System.Math.Floor((lowF + highF) / 2.) |> int
+        // printfn "%A" mid
+        let leftLow, leftHigh, leftSum = maxSubSeq low mid xs
+        let rightLow, rightHigh, rightSum = maxSubSeq (mid + 1) high xs
+        let crossLow, crossHigh, crossSum = maxCrossingSubSeq low mid high xs
 
-// let maxSeq acc xs = 
-//     match xs with
-//     | [] -> []
-//     | hd::tl -> 
+        match leftSum, rightSum, crossSum with
+        | l, r, c when l >= r && l >= c -> leftLow, leftHigh, leftSum
+        | l, r, c when r >= l && r >= c -> rightLow, rightHigh, rightSum
+        | _ -> crossLow, crossHigh, crossSum
 
-// let leftSum acc low mid xs = 
+let xs = 
+    [
+    (1,13);(2,-3);(3,-25);(4,20);(5,-3);(6,-16);
+    (7,-23);(8,18);(9,20);(10,-7);(11,12);(12,-5);
+    (13,-22);(14,15);(15,-4);(16,7)]
+    |> List.map (snd >> float)
 
-
-// Max crossing subsequence
-// let maxCrsSseq low mid high xs = 
-//     match xs with
-//     | [] -> (0,0,0)
-//     | _ -> 
-
+xs |> maxSubSeq 0 (xs.Length - 1)
